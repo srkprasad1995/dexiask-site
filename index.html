@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dexiask — Ask anything about your codebase</title>
+<meta name="description" content="An open-source AI Ask platform for your codebase. Index once, ask anything in plain language — no documentation required. Self-hosted, Claude-powered, Qdrant-backed." />
+<link rel="canonical" href="https://dexiask.com/" />
+<meta property="og:title" content="Dexiask — Ask anything about your codebase" />
+<meta property="og:description" content="Index once, ask anything. An open-source, self-hosted AI Ask platform for your code." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://dexiask.com/" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Dexiask — Ask anything about your codebase" />
+<meta name="twitter:description" content="Index once, ask anything. An open-source, self-hosted AI Ask platform for your code." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0d0f13; --bg2:#12151b; --surface:#171b22; --surface2:#1d222b;
+    --border:#272d38; --border2:#333b48;
+    --fg:#e8eaef; --muted:#9aa2ae; --faint:#6b7280;
+    --brand:#d85a30; --brand-2:#e87a4e; --brand-soft:rgba(216,90,48,.14);
+    --cyan:#4bb3b0; --green:#5fae7f;
+    --radius:14px; --maxw:1140px;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(1200px 600px at 70% -10%,rgba(216,90,48,.10),transparent 60%),
+                     radial-gradient(900px 500px at 0% 0%,rgba(75,179,176,.06),transparent 55%);
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-2)}
+
+  /* nav */
+  header.nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);
+    background:rgba(13,15,19,.72);border-bottom:1px solid var(--border)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.01em}
+  .logo{width:30px;height:30px;display:inline-grid;place-items:center;line-height:0}
+  .logo svg{width:100%;height:100%;display:block;filter:drop-shadow(0 2px 8px rgba(216,90,48,.32))}
+  .nav-links{display:flex;align-items:center;gap:26px;font-size:14px;color:var(--muted)}
+  .nav-links a:hover{color:var(--fg)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;
+    padding:10px 16px;border-radius:10px;border:1px solid var(--border2);transition:.15s;cursor:pointer}
+  .btn:hover{border-color:var(--brand);color:#fff}
+  .btn-primary{background:var(--brand);border-color:var(--brand);color:#fff}
+  .btn-primary:hover{background:var(--brand-2);border-color:var(--brand-2)}
+  .nav-links .btn{padding:8px 14px}
+  @media(max-width:720px){.nav-links a.hide-sm{display:none}}
+
+  /* hero */
+  .hero{padding:84px 0 40px;text-align:center}
+  h1{font-size:clamp(34px,6vw,60px);line-height:1.05;letter-spacing:-.03em;margin:18px auto 0;max-width:16ch;font-weight:700}
+  h1 .accent{color:var(--brand-2)}
+  .sub{font-size:clamp(16px,2.2vw,20px);color:var(--muted);max-width:60ch;margin:20px auto 0}
+  .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+  .cta .btn{padding:13px 22px;font-size:15px}
+  .ghost-note{margin-top:14px;font-size:13px;color:var(--faint);font-family:var(--mono)}
+
+  /* generic section */
+  section{padding:64px 0}
+  .section-head{text-align:center;max-width:60ch;margin:0 auto 40px}
+  .section-head h2{font-size:clamp(26px,4vw,38px);letter-spacing:-.02em;margin:10px 0 0}
+  .section-head p{color:var(--muted);margin:12px 0 0}
+
+  /* mockup shared */
+  .screen{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.7);overflow:hidden}
+  .screen-bar{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--border);background:var(--bg2)}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .dot.r{background:#e05a4e}.dot.y{background:#e0b64e}.dot.g{background:#5fae7f}
+  .screen-url{margin-left:12px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+
+  .hero-screen{max-width:940px;margin:46px auto 0}
+  /* chat mockup */
+  .chat{display:flex;flex-direction:column;gap:16px;padding:22px}
+  .msg{display:flex;gap:12px;max-width:100%}
+  .avatar{flex:0 0 30px;width:30px;height:30px;border-radius:8px;background:linear-gradient(150deg,var(--brand),#b8461f);
+    display:grid;place-items:center;color:#fff;font-family:var(--mono);font-size:13px;font-weight:600}
+  .avatar.user{background:var(--surface2);color:var(--muted);border:1px solid var(--border2)}
+  .bubble{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 15px;font-size:14.5px}
+  .msg.user{justify-content:flex-end}
+  .msg.user .bubble{background:var(--brand-soft);border-color:rgba(216,90,48,.3);color:#f4d9cd}
+  .toolchip{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--cyan);
+    background:rgba(75,179,176,.10);border:1px solid rgba(75,179,176,.25);border-radius:8px;padding:6px 10px;margin-bottom:10px}
+  .code{font-family:var(--mono);font-size:12.5px;background:#0b0d11;border:1px solid var(--border);border-radius:8px;
+    padding:10px 12px;margin-top:10px;color:#cdd3dd;overflow:auto}
+  .code .k{color:#e87a4e}.code .s{color:#5fae7f}.code .c{color:var(--faint)}
+  .path{color:var(--brand-2)}
+
+  /* value cards */
+  .grid{display:grid;gap:18px}
+  .cards3{grid-template-columns:repeat(3,1fr)}
+  .cards2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:860px){.cards3,.cards2{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px}
+  .card:hover{border-color:var(--border2)}
+  .card .ic{width:38px;height:38px;border-radius:10px;background:var(--brand-soft);border:1px solid rgba(216,90,48,.28);
+    display:grid;place-items:center;font-size:19px;margin-bottom:14px}
+  .card h3{margin:0 0 6px;font-size:17px;letter-spacing:-.01em}
+  .card p{margin:0;color:var(--muted);font-size:14.5px}
+
+  /* split showcase */
+  .split{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+  .split.rev{grid-template-columns:.95fr 1.05fr}
+  @media(max-width:900px){.split,.split.rev{grid-template-columns:1fr;gap:26px}}
+  .split h3{font-size:24px;letter-spacing:-.02em;margin:8px 0 0}
+  .split p{color:var(--muted);margin:12px 0 0}
+  .split ul{margin:16px 0 0;padding:0;list-style:none;color:var(--muted);font-size:14.5px}
+  .split li{padding:5px 0 5px 24px;position:relative}
+  .split li:before{content:"→";position:absolute;left:0;color:var(--brand-2)}
+
+  /* indexer mockup */
+  .idx{padding:18px}
+  .idx .row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid var(--border);
+    border-radius:10px;background:var(--bg2);margin-bottom:10px;font-size:14px}
+  .idx .repo{font-family:var(--mono);font-size:13px}
+  .badge{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid}
+  .badge.ok{color:var(--green);border-color:rgba(95,174,127,.35);background:rgba(95,174,127,.10)}
+  .badge.idle{color:var(--faint);border-color:var(--border2)}
+  .searchbar{display:flex;gap:8px;margin:4px 0 14px}
+  .searchbar input{flex:1;background:#0b0d11;border:1px solid var(--border2);border-radius:9px;color:var(--fg);
+    padding:10px 12px;font-family:var(--mono);font-size:13px}
+  .hit{padding:11px 13px;border-left:2px solid var(--brand);background:var(--surface2);border-radius:0 8px 8px 0;margin-bottom:8px}
+  .hit .h{font-family:var(--mono);font-size:12.5px;color:var(--brand-2)}
+  .hit .snip{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:5px;white-space:pre;overflow:auto}
+
+  /* steps */
+  .steps{counter-reset:s;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:860px){.steps{grid-template-columns:1fr}}
+  .step{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;position:relative}
+  .step:before{counter-increment:s;content:counter(s);font-family:var(--mono);font-weight:600;color:var(--brand-2);
+    background:var(--brand-soft);border:1px solid rgba(216,90,48,.3);width:30px;height:30px;border-radius:8px;
+    display:grid;place-items:center;font-size:14px;margin-bottom:12px}
+  .step h3{margin:0 0 6px;font-size:16px}
+  .step p{margin:0;color:var(--muted);font-size:14px}
+  .step code{font-family:var(--mono);font-size:12.5px;background:#0b0d11;border:1px solid var(--border);
+    border-radius:6px;padding:2px 6px;color:#cdd3dd}
+
+  /* cta band */
+  .band{background:linear-gradient(180deg,var(--surface),var(--bg2));border:1px solid var(--border);
+    border-radius:20px;padding:48px 32px;text-align:center;margin:20px 0}
+  .band h2{font-size:clamp(24px,4vw,34px);letter-spacing:-.02em;margin:0}
+  .band p{color:var(--muted);margin:12px auto 24px;max-width:52ch}
+
+  footer{border-top:1px solid var(--border);padding:34px 0;color:var(--faint);font-size:13px}
+  .foot-in{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+  .foot-in a:hover{color:var(--fg)}
+
+  .icon{width:18px;height:18px;fill:currentColor;vertical-align:-3px}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top"><span class="logo"><svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EF7A44"/><stop offset="1" stop-color="#C6471C"/></linearGradient></defs><rect width="80" height="80" rx="20" fill="url(#lg1)"/><path d="M28 46 L25 59 L41 47 Z" fill="#fff" fill-opacity=".96"/><rect x="16" y="19" width="48" height="30" rx="11" fill="#fff" fill-opacity=".96"/><path d="M34.8 27.5 A6.2 6.2 0 1 1 40.5 36.2 V39" fill="none" stroke="#C6471C" stroke-width="4" stroke-linecap="round"/><circle cx="40.5" cy="44" r="2.4" fill="#C6471C"/></svg></span> dexiask</a>
+    <nav class="nav-links">
+      <a class="hide-sm" href="#why">Why</a>
+      <a class="hide-sm" href="#see">See it</a>
+      <a class="hide-sm" href="#start">Quickstart</a>
+      <a class="btn" href="https://github.com/srkprasad1995/dexiask" target="_blank" rel="noopener">
+        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<a id="top"></a>
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Open source · Self-hosted · Claude-powered</span>
+    <h1>Ask anything about your <span class="accent">codebase</span>.</h1>
+    <p class="sub">Index a repo once, then ask questions in plain language — “where is auth handled?”, “how does a request flow end to end?”. The code is the source of truth. No wiki, no docs, no waiting on the one person who knows that part.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/srkprasad1995/dexiask" target="_blank" rel="noopener">Get it on GitHub</a>
+      <a class="btn" href="#start">How it works</a>
+    </div>
+    <div class="ghost-note">git clone · docker compose up · ask</div>
+
+    <!-- HERO CHAT MOCKUP -->
+    <div class="screen hero-screen" role="img" aria-label="Dexiask chat answering a question about a codebase">
+      <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="screen-url">localhost · dexiask</span></div>
+      <div class="chat">
+        <div class="msg user"><div class="bubble">Where is JWT validation handled in this repo?</div><div class="avatar user">you</div></div>
+        <div class="msg">
+          <div class="avatar">D</div>
+          <div class="bubble">
+            <span class="toolchip">⚙ semantic_search · “jwt validation auth middleware”</span>
+            <div>JWT validation lives in <span class="path">auth/middleware.go</span> — the <span class="mono">Verify()</span> function checks the RS256 signature against the JWKS and injects the identity into the request context.
+            <div class="code"><span class="c">// auth/middleware.go:42</span>
+<span class="k">func</span> (m *Auth) Verify(next http.Handler) http.Handler {
+  claims, err := m.jwks.<span class="k">Parse</span>(token)   <span class="c">// RS256</span>
+  ctx := context.<span class="k">WithValue</span>(r.Context(), userKey, claims.Sub)
+}</div>
+            Want me to trace where <span class="mono">Verify</span> is registered on the router?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Why Dexiask</span>
+      <h2>Your codebase, answerable.</h2>
+      <p>Documentation rots the moment it's written. Dexiask reads the actual committed code, so answers reflect what's really there.</p>
+    </div>
+    <div class="grid cards3">
+      <div class="card"><div class="ic">⚡</div><h3>Index once, ask anything</h3><p>Point it at a repo, index the default branch a single time, then ask in plain language forever. No comments or docs required.</p></div>
+      <div class="card"><div class="ic">🧭</div><h3>No documentation debt</h3><p>The index tracks the real committed code — not a stale README from six months ago. Answers stay true to the source.</p></div>
+      <div class="card"><div class="ic">🕸️</div><h3>Decentralized knowledge</h3><p>New joiners, on-call, PMs — anyone gets accurate answers without interrupting the one person who “knows that part.”</p></div>
+      <div class="card"><div class="ic">🚀</div><h3>Speed</h3><p>Seconds to an answer instead of an afternoon of grepping or waiting on a Slack reply. Ask in the browser or from Slack.</p></div>
+      <div class="card"><div class="ic">🔎</div><h3>Onboarding &amp; archaeology</h3><p>Ramp on an unfamiliar service, understand a legacy module, and trace “why is this here?” through git blame and log.</p></div>
+      <div class="card"><div class="ic">🔒</div><h3>Yours, self-hosted</h3><p>Runs on your machine with your keys. Your code never leaves your infrastructure beyond the API calls you opt into.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SEE IT -->
+<section id="see" style="background:linear-gradient(180deg,transparent,rgba(255,255,255,.015))">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">See it</span>
+      <h2>Chat that reads code. Search that means it.</h2>
+    </div>
+
+    <div class="split">
+      <div>
+        <span class="eyebrow">Ask mode</span>
+        <h3>A read-only agent with tools</h3>
+        <p>The Claude agent reads files, searches the web, and calls the built-in code index. Rich streaming answers with syntax highlighting, mermaid diagrams, and math — plus clickable follow-up choices.</p>
+        <ul>
+          <li>Semantic + lexical code search, git blame/log/diff</li>
+          <li>Attach files to a message for context</li>
+          <li>Custom skills via drop-in <span class="mono">SKILL.md</span> packs</li>
+          <li>Bring your own MCP servers for extra tools</li>
+        </ul>
+      </div>
+      <div class="screen" role="img" aria-label="Dexiask chat with a mermaid diagram answer">
+        <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="screen-url">chat</span></div>
+        <div class="chat">
+          <div class="msg user"><div class="bubble">Draw the request flow.</div><div class="avatar user">you</div></div>
+          <div class="msg"><div class="avatar">D</div><div class="bubble">
+            Here's the path a chat turn takes:
+            <div class="code"><span class="c">flowchart LR</span>
+  Browser <span class="k">--SSE--></span> Backend
+  Backend <span class="k">--Job--></span> Engine
+  Engine  <span class="k">--MCP--></span> Indexer
+  Engine  <span class="k">--></span> Claude</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="split rev" style="margin-top:48px">
+      <div class="screen" role="img" aria-label="Dexiask indexer page listing repos and search results">
+        <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="screen-url">indexer</span></div>
+        <div class="idx">
+          <div class="row"><span class="repo">github.com/acme/api</span><span class="badge ok">indexed · 4,812 chunks</span></div>
+          <div class="row"><span class="repo">/workspace/web</span><span class="badge idle">reindex</span></div>
+          <div class="searchbar"><input value="retry with backoff" readonly aria-label="search query" /><span class="btn btn-primary" style="padding:8px 14px">Search</span></div>
+          <div class="hit"><div class="h">api · internal/http/retry.go:23 · 0.82</div><div class="snip">func withBackoff(fn func() error) error {
+  for i := 0; i &lt; maxTries; i++ { … }</div></div>
+          <div class="hit"><div class="h">api · internal/queue/consumer.go:58 · 0.71</div><div class="snip">// exponential backoff on transient errors</div></div>
+        </div>
+      </div>
+      <div>
+        <span class="eyebrow">Indexer</span>
+        <h3>Semantic code search, self-contained</h3>
+        <p>Qdrant vectors + Voyage embeddings over the default branch of any git repo. Add a repo by URL or local path, set a token for private repos, and it's searchable — by the UI and by the agent.</p>
+        <ul>
+          <li>Default-branch indexing, incremental &amp; idempotent</li>
+          <li>Private repos via a server-side git token</li>
+          <li>Exposed to the agent as an MCP server</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUICKSTART -->
+<section id="start">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Quickstart</span>
+      <h2>Three commands to answers.</h2>
+      <p>Docker Compose brings up the whole stack — web, agent engine, indexer, Qdrant, and Postgres.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Clone &amp; configure</h3><p><code>cp .env.example .env</code> and drop in your Anthropic + Voyage keys.</p></div>
+      <div class="step"><h3>Bring it up</h3><p><code>docker compose up</code> — six services, one command. Open the web UI.</p></div>
+      <div class="step"><h3>Index &amp; ask</h3><p>Add a repo on the Indexer page, then ask the agent anything about the code.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section>
+  <div class="wrap">
+    <div class="band">
+      <h2>Stop grepping. Start asking.</h2>
+      <p>Dexiask is MIT-licensed and self-hostable. Clone it, point it at a repo, and ask your first question in minutes.</p>
+      <a class="btn btn-primary" style="padding:13px 24px;font-size:15px" href="https://github.com/srkprasad1995/dexiask" target="_blank" rel="noopener">View the repo on GitHub →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="brand" style="font-size:16px"><span class="logo" style="width:26px;height:26px"><svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EF7A44"/><stop offset="1" stop-color="#C6471C"/></linearGradient></defs><rect width="80" height="80" rx="20" fill="url(#lg2)"/><path d="M28 46 L25 59 L41 47 Z" fill="#fff" fill-opacity=".96"/><rect x="16" y="19" width="48" height="30" rx="11" fill="#fff" fill-opacity=".96"/><path d="M34.8 27.5 A6.2 6.2 0 1 1 40.5 36.2 V39" fill="none" stroke="#C6471C" stroke-width="4" stroke-linecap="round"/><circle cx="40.5" cy="44" r="2.4" fill="#C6471C"/></svg></span> dexiask</div>
+    <div>MIT licensed · Claude · Qdrant · Voyage</div>
+    <a href="https://github.com/srkprasad1995/dexiask" target="_blank" rel="noopener">github.com/srkprasad1995/dexiask</a>
+  </div>
+</footer>
+
+</body>
+</html>
