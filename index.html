@@ -227,7 +227,7 @@
       <div class="card"><div class="ic">🕸️</div><h3>Decentralized knowledge</h3><p>New joiners, on-call, PMs — anyone gets accurate answers without interrupting the one person who “knows that part.”</p></div>
       <div class="card"><div class="ic">🚀</div><h3>Speed</h3><p>Seconds to an answer instead of an afternoon of grepping or waiting on a Slack reply. Ask in the browser or from Slack.</p></div>
       <div class="card"><div class="ic">🔎</div><h3>Onboarding &amp; archaeology</h3><p>Ramp on an unfamiliar service, understand a legacy module, and trace “why is this here?” through git blame and log.</p></div>
-      <div class="card"><div class="ic">🔒</div><h3>Yours, self-hosted</h3><p>Runs on your machine with your keys. Your code never leaves your infrastructure beyond the API calls you opt into.</p></div>
+      <div class="card"><div class="ic">🔒</div><h3>Yours, self-hosted &amp; multi-user</h3><p>Runs on your machine with your keys — admin/member roles, invites, and per-user repo access. Your code never leaves your infra beyond the API calls you opt into.</p></div>
     </div>
   </div>
 </section>
@@ -248,6 +248,7 @@
         <ul>
           <li>Semantic + lexical code search, git blame/log/diff</li>
           <li>Attach files to a message for context</li>
+          <li>Sign in with GitHub — per-user history in the sidebar</li>
           <li>Custom skills via drop-in <span class="mono">SKILL.md</span> packs</li>
           <li>Bring your own MCP servers for extra tools</li>
         </ul>
@@ -283,12 +284,36 @@
       <div>
         <span class="eyebrow">Indexer</span>
         <h3>Semantic code search, self-contained</h3>
-        <p>Qdrant vectors + Voyage embeddings over the default branch of any git repo. Add a repo by URL or local path, set a token for private repos, and it's searchable — by the UI and by the agent.</p>
+        <p>Qdrant vectors + Voyage embeddings over the default branch of any git repo. Optional LLM-generated <strong>domain docs</strong> — architecture, modules, concepts — get embedded alongside the code, so a single search returns docs and source together.</p>
         <ul>
           <li>Default-branch indexing, incremental &amp; idempotent</li>
-          <li>Private repos via a server-side git token</li>
+          <li>Private repos via one central git token</li>
+          <li>Per-user repo access, validated inside the indexer</li>
           <li>Exposed to the agent as an MCP server</li>
         </ul>
+      </div>
+    </div>
+
+    <div class="split" style="margin-top:48px">
+      <div>
+        <span class="eyebrow">Memory</span>
+        <h3>An agent that remembers</h3>
+        <p>The agent records observations as you chat. A periodic “dream” judge consolidates them into durable <strong>user / repo / global</strong> memory that's injected into later answers — so it gets sharper about you and your codebase over time.</p>
+        <ul>
+          <li>Per-user memory, browsable on the Memory page</li>
+          <li>Dream consolidation on a schedule — or on demand</li>
+          <li>FS-backed service, exposed to the agent as MCP</li>
+        </ul>
+      </div>
+      <div class="screen" role="img" aria-label="Dexiask memory page listing consolidated user, repo, and global memories">
+        <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="screen-url">memory</span></div>
+        <div class="idx">
+          <div class="row"><span class="repo">🧠 user · prefers Go, terse answers</span><span class="badge ok">durable</span></div>
+          <div class="row"><span class="repo">📦 repo · auth = RS256 + JWKS middleware</span><span class="badge ok">durable</span></div>
+          <div class="row"><span class="repo">📦 repo · migrations live in db/migrate</span><span class="badge ok">durable</span></div>
+          <div class="row"><span class="repo">🌐 global · deploys via GitHub Actions</span><span class="badge ok">durable</span></div>
+          <div class="row" style="opacity:.72"><span class="repo">✎ working · noticed a retry/backoff helper…</span><span class="badge idle">pending dream</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -300,11 +325,11 @@
     <div class="section-head">
       <span class="eyebrow">Quickstart</span>
       <h2>Three commands to answers.</h2>
-      <p>Docker Compose brings up the whole stack — web, agent engine, indexer, Qdrant, and Postgres.</p>
+      <p>Docker Compose brings up the whole stack — web, agent engine, indexer, memory, Qdrant, and Postgres.</p>
     </div>
     <div class="steps">
       <div class="step"><h3>Clone &amp; configure</h3><p><code>cp .env.example .env</code> and drop in your Anthropic + Voyage keys.</p></div>
-      <div class="step"><h3>Bring it up</h3><p><code>docker compose up</code> — six services, one command. Open the web UI.</p></div>
+      <div class="step"><h3>Bring it up</h3><p><code>docker compose up</code> — the whole stack, one command. Open the web UI.</p></div>
       <div class="step"><h3>Index &amp; ask</h3><p>Add a repo on the Indexer page, then ask the agent anything about the code.</p></div>
     </div>
   </div>
